@@ -1,5 +1,5 @@
 import { Construct } from "constructs";
-import { TerraformStack } from "cdktf";
+import { TerraformStack, TerraformOutput } from "cdktf";
 import { AwsProvider } from "../.gen/providers/aws/provider";
 import { AppsyncGraphqlApi } from "../.gen/providers/aws/appsync-graphql-api";
 import * as fs from 'fs';
@@ -17,10 +17,14 @@ export class MyAppSyncStack extends TerraformStack {
     const schemaContent = fs.readFileSync('./lib/schema.graphql', 'utf-8');
 
     // AppSync GraphQL APIの定義
-    new AppsyncGraphqlApi(this, "example", {
+    const appsyncApi = new AppsyncGraphqlApi(this, "example", {
       authenticationType: "AWS_IAM",
       name: "cdktf-appsync",
       schema: schemaContent
+    });
+
+    new TerraformOutput(this, "appsyncEndpoint", {
+      value: appsyncApi.uris,
     });
   }
 }

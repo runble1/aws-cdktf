@@ -7,5 +7,13 @@
   "terraformModules": [],
   "context": {
 
+  },
+  "terraformBackend": {
+    "s3": {
+      "bucket": "tfstate-runble1",
+      "key": "aws_cdk/appsync_cdktf/terraform.tfstate",
+      "region": "ap-northeast-1",
+      "encrypt": true
+    }
   }
 }
