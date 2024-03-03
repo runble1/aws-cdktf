@@ -1,5 +1,4 @@
 import { Construct } from "constructs";
-
 import { IamRole } from "../../.gen/providers/aws/iam-role";
 import { IamRolePolicy } from "../../.gen/providers/aws/iam-role-policy";
 
@@ -30,8 +29,12 @@ export function createAppsyncIamRole(
       Statement: [{
         Effect: "Allow",
         Action: [
-          "iotevents:ListDetectors",
-          "iotevents:DescribeDetector",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
         ],
         Resource: "*",
       }],

@@ -1,6 +1,6 @@
 import { App } from "cdktf";
-import { AppSyncApi } from "../lib/appsync/api";
+import { MyInfrastructureStack } from "../lib/app";
 
 const app = new App();
-new AppSyncApi(app, "AppSyncApi");
+new MyInfrastructureStack(app, "MyInfrastructureStack");
 app.synth();

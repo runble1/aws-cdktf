@@ -1,45 +1,53 @@
-import { TerraformOutput, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
-import { AppsyncApiKey } from "../../.gen/providers/aws/appsync-api-key";
-import { AppsyncGraphqlApi } from "../../.gen/providers/aws/appsync-graphql-api";
-import { AwsProvider } from "../../.gen/providers/aws/provider";
-//import { createAppsyncIamRole } from "./iam";
-
 import * as fs from "fs";
+import { AppsyncApiKey } from "../../.gen/providers/aws/appsync-api-key";
+import { AppsyncDatasource } from "../../.gen/providers/aws/appsync-datasource";
+import { AppsyncGraphqlApi } from "../../.gen/providers/aws/appsync-graphql-api";
+import { createAppsyncIamRole } from "./iam";
 
-export class AppSyncApi extends TerraformStack {
-  constructor(scope: Construct, name: string) {
+export class AppSyncApi extends Construct {
+  public readonly graphqlUrl: any;
+
+  constructor(scope: Construct, name: string, dynamodbTableName: string) {
     super(scope, name);
 
-    // AWSプロバイダーの設定
-    new AwsProvider(this, "AWS", {
-      region: "ap-northeast-1",
-    });
-
     // IAM ロールの作成
-    /*
     const appsyncRole = createAppsyncIamRole(
       this,
-      "sample_httpDS_IoTEvents_role",
+      `${name}Role`,
       "appsync.amazonaws.com",
-    );*/
+    );
 
     // スキーマファイルの内容を読み込む
-    const schemaContent = fs.readFileSync("./lib/appsync/schema.graphql", "utf-8");
+    const schemaContent = fs.readFileSync(
+      "./lib/appsync/schema.graphql",
+      "utf-8",
+    );
 
     // AppSync GraphQL APIの定義
     const appsyncApi = new AppsyncGraphqlApi(this, "example", {
       authenticationType: "API_KEY",
-      name: "cdktf-appsync",
+      name: name,
       schema: schemaContent,
     });
 
+    // AppSync のデータソースとして DynamoDB テーブルを設定
+    new AppsyncDatasource(this, "MyDynamoDbDataSource", {
+      apiId: appsyncApi.id,
+      name: "MyDynamoDbDataSource",
+      type: "AMAZON_DYNAMODB",
+      serviceRoleArn: appsyncRole.arn,
+      dynamodbConfig: {
+        tableName: dynamodbTableName, // DynamoDB テーブルの名前を指定
+        region: "ap-northeast-1",
+      },
+    });
+
+    // AppSync API キーの作成
     new AppsyncApiKey(this, "MyAppSyncApiKey", {
       apiId: appsyncApi.id,
     });
 
-    new TerraformOutput(this, "appsyncEndpoint", {
-      value: appsyncApi.uris,
-    });
+    this.graphqlUrl = appsyncApi.uris;
   }
 }

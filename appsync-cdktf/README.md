@@ -8,7 +8,9 @@ cdktf deploy
 ```
 
 ## Format
-* dprint
+
+- dprint
+
 ```shell
 npm run format
 ```
