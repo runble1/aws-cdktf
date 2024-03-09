@@ -2,6 +2,7 @@ import { TerraformOutput, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 import { AwsProvider } from "../.gen/providers/aws/provider";
 import { AppSyncApi } from "./appsync/api";
+import { setupResolvers } from "./appsync/resolver";
 import { DynamoDbTable } from "./dynamodb/table";
 
 export class MyInfrastructureStack extends TerraformStack {
@@ -20,7 +21,13 @@ export class MyInfrastructureStack extends TerraformStack {
       dynamoDbTable.table.name,
     );
 
-    // AppSync エンドポイントの出力
+    setupResolvers(
+        this, 
+        appsyncApi.apiId, // AppSync API のID
+        appsyncApi.dataSourceName, // データソース名
+        dynamoDbTable.table.name // DynamoDB テーブル名
+      );
+
     new TerraformOutput(this, "appsyncEndpoint", {
       value: appsyncApi.graphqlUrl,
     });

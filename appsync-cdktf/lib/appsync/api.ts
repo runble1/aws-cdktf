@@ -7,6 +7,8 @@ import { createAppsyncIamRole } from "./iam";
 
 export class AppSyncApi extends Construct {
   public readonly graphqlUrl: any;
+  public readonly apiId: string; // AppSync API の ID を保持するプロパティ
+  public readonly dataSourceName: string; // データソース名を保持するプロパティ
 
   constructor(scope: Construct, name: string, dynamodbTableName: string) {
     super(scope, name);
@@ -20,7 +22,7 @@ export class AppSyncApi extends Construct {
 
     // スキーマファイルの内容を読み込む
     const schemaContent = fs.readFileSync(
-      "./lib/appsync/schema.graphql",
+      "./schema/schema.graphql",
       "utf-8",
     );
 
@@ -31,8 +33,11 @@ export class AppSyncApi extends Construct {
       schema: schemaContent,
     });
 
+    this.apiId = appsyncApi.id;
+    this.graphqlUrl = appsyncApi.uris;
+
     // AppSync のデータソースとして DynamoDB テーブルを設定
-    new AppsyncDatasource(this, "MyDynamoDbDataSource", {
+    const dataSource = new AppsyncDatasource(this, "MyDynamoDbDataSource", {
       apiId: appsyncApi.id,
       name: "MyDynamoDbDataSource",
       type: "AMAZON_DYNAMODB",
@@ -43,11 +48,12 @@ export class AppSyncApi extends Construct {
       },
     });
 
+    this.dataSourceName = dataSource.name; // データソース名を保存
+
+
     // AppSync API キーの作成
     new AppsyncApiKey(this, "MyAppSyncApiKey", {
       apiId: appsyncApi.id,
     });
-
-    this.graphqlUrl = appsyncApi.uris;
   }
 }
