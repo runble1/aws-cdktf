@@ -1,12 +1,22 @@
-type Task {
-	id: ID!
-	title: String
-	done: Boolean
+type ProductPrice {
+  ProductID: String!
+  CheckDate: String!
+  Price: Float
+  PreviousPrice: Float
+  PriceChange: Float
+  Title: String
+  URL: String
 }
+
 type Query {
-	getTaskList: [Task]
-	getTask(id: ID!): Task
+  getProductPrice(ProductID: String!, CheckDate: String!): ProductPrice
 }
+
+type Mutation {
+  putProductPrice(ProductID: String!, CheckDate: String!, Price: Float, PreviousPrice: Float, PriceChange: Float, Title: String, URL: String): ProductPrice
+}
+
 schema {
-	query: Query
+  query: Query
+  mutation: Mutation
 }

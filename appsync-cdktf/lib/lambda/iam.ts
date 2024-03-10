@@ -21,11 +21,16 @@ export function createIamRole(
     }),
   });
 
-  // AWSLambdaBasicExecutionRole ポリシーのアタッチメント
   new IamRolePolicyAttachment(scope, "LambdaBasicExecutionRoleAttachment", {
     role: role.name,
     policyArn:
       "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  });
+
+  new IamRolePolicyAttachment(scope, "AppSyncAdministratoAttachment", {
+    role: role.name,
+    policyArn:
+      "arn:aws:iam::aws:policy/AWSAppSyncAdministrator",
   });
 
   return role;

@@ -5,6 +5,7 @@ import { AwsProvider } from "../.gen/providers/aws/provider";
 import { AppSyncApi } from "./appsync/api";
 import { setupResolvers } from "./appsync/resolver";
 import { DynamoDbTable } from "./dynamodb/table";
+import { DynamoDbTableItem } from "./dynamodb/table_item"
 import { NodejsFunction } from "./lambda/function";
 
 export class MyInfrastructureStack extends TerraformStack {
@@ -16,6 +17,11 @@ export class MyInfrastructureStack extends TerraformStack {
     });
 
     const dynamoDbTable = new DynamoDbTable(this, "DynamoDbTable");
+    new DynamoDbTableItem(this, "DynamoDbTableItem", {
+      tableName: dynamoDbTable.table.name,
+      hashKey: "ProductID",
+      rangeKey: "CheckDate"
+    });
 
     const appsyncApi = new AppSyncApi(
       this,
@@ -27,21 +33,27 @@ export class MyInfrastructureStack extends TerraformStack {
       this,
       appsyncApi.apiId, // AppSync API のID
       appsyncApi.dataSourceName, // データソース名
-      dynamoDbTable.table.name, // DynamoDB テーブル名
     );
 
+    new TerraformOutput(this, "appsyncEndpoint", {
+      value: appsyncApi.graphqlUrl,
+    });
+    
+    /*
     const nodejsFunctionInstance = new NodejsFunction(this, "hello-world", {
       handler: "index.handler",
       functionName: "helloWorldFunction",
-      path: path.join(__dirname, "..", "functions/helloworld"),
+      path: path.join(__dirname, "..", "functions/hello-world"),
+    });*/
+    
+    const nodejsFunctionInstance = new NodejsFunction(this, "call-appsync", {
+      handler: "index.handler",
+      functionName: "helloWorldFunction",
+      path: path.join(__dirname, "..", "functions/call-appsync"),
     });
 
     new TerraformOutput(this, "lambdaFunctionUrl", {
       value: nodejsFunctionInstance.lambdaFunctionUrl.functionUrl,
-    });
-
-    new TerraformOutput(this, "appsyncEndpoint", {
-      value: appsyncApi.graphqlUrl,
     });
   }
 }

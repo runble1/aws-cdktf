@@ -28,7 +28,7 @@ export class AppSyncApi extends Construct {
 
     // AppSync GraphQL APIの定義
     const appsyncApi = new AppsyncGraphqlApi(this, "example", {
-      authenticationType: "API_KEY",
+      authenticationType: "AWS_IAM",
       name: name,
       schema: schemaContent,
     });
@@ -43,12 +43,12 @@ export class AppSyncApi extends Construct {
       type: "AMAZON_DYNAMODB",
       serviceRoleArn: appsyncRole.arn,
       dynamodbConfig: {
-        tableName: dynamodbTableName, // DynamoDB テーブルの名前を指定
+        tableName: dynamodbTableName,
         region: "ap-northeast-1",
       },
     });
 
-    this.dataSourceName = dataSource.name; // データソース名を保存
+    this.dataSourceName = dataSource.name;
 
     // AppSync API キーの作成
     new AppsyncApiKey(this, "MyAppSyncApiKey", {
