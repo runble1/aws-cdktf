@@ -1,8 +1,13 @@
 // lib/appsync/resolver.ts
-import { AppsyncResolver } from "../../.gen/providers/aws/appsync-resolver";
 import { Construct } from "constructs";
+import { AppsyncResolver } from "../../.gen/providers/aws/appsync-resolver";
 
-export function setupResolvers(scope: Construct, apiId: string, dataSourceName: string, tableName: string) {
+export function setupResolvers(
+  scope: Construct,
+  apiId: string,
+  dataSourceName: string,
+  tableName: string,
+) {
   // getTaskList クエリのリゾルバ
   new AppsyncResolver(scope, "getTaskListResolver", {
     apiId: apiId,
@@ -14,7 +19,7 @@ export function setupResolvers(scope: Construct, apiId: string, dataSourceName: 
       "operation": "Scan",
       "tableName": "${tableName}"
     }`,
-    responseTemplate: "$util.toJson($ctx.result.items)"
+    responseTemplate: "$util.toJson($ctx.result.items)",
   });
 
   // getTask クエリのリゾルバ
@@ -31,6 +36,6 @@ export function setupResolvers(scope: Construct, apiId: string, dataSourceName: 
       },
       "tableName": "${tableName}"
     }`,
-    responseTemplate: "$util.toJson($ctx.result)"
+    responseTemplate: "$util.toJson($ctx.result)",
   });
 }
