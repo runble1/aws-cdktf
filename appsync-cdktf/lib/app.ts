@@ -1,4 +1,4 @@
-import { TerraformOutput, TerraformStack } from "cdktf";
+import { TerraformOutput, TerraformStack, Fn } from "cdktf";
 import { Construct } from "constructs";
 import * as path from "path";
 import { AwsProvider } from "../.gen/providers/aws/provider";
@@ -28,8 +28,9 @@ export class MyInfrastructureStack extends TerraformStack {
       dynamoDbTable.table.name,
     );
 
+    const graphqlUrl = Fn.lookup(appsyncApi.graphqlUrl, "GRAPHQL", "");
     new TerraformOutput(this, "appsyncEndpoint", {
-      value: appsyncApi.graphqlUrl
+      value: graphqlUrl
     });
     
     /*
@@ -43,7 +44,7 @@ export class MyInfrastructureStack extends TerraformStack {
       handler: "index.handler",
       functionName: "helloWorldFunction",
       path: path.join(__dirname, "..", "functions/call-appsync"),
-      graphqlUrl: "https://uf5ycqmj35bcfgr6kc5xeuzqyi.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+      graphqlUrl: graphqlUrl
     });
 
     new TerraformOutput(this, "lambdaFunctionUrl", {
