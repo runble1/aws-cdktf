@@ -1,14 +1,12 @@
 import { Construct } from "constructs";
 import * as fs from "fs";
-import { AppsyncApiKey } from "../../.gen/providers/aws/appsync-api-key";
-import { AppsyncDatasource } from "../../.gen/providers/aws/appsync-datasource";
 import { AppsyncGraphqlApi } from "../../.gen/providers/aws/appsync-graphql-api";
 import { createAppsyncIamRole } from "./iam";
+import { AppSyncDataSource, AppSyncDataSourceProps } from "./datasource";
+import { createAppsyncResolver, AppSyncResolverProps } from "./resolver";
 
 export class AppSyncApi extends Construct {
   public readonly graphqlUrl: any;
-  public readonly apiId: string;
-  public readonly dataSourceName: string;
 
   constructor(scope: Construct, name: string, dynamodbTableName: string) {
     super(scope, name);
@@ -26,33 +24,27 @@ export class AppSyncApi extends Construct {
       "utf-8",
     );
 
-    // AppSync GraphQL APIの定義
+    // GraphQL API
     const appsyncApi = new AppsyncGraphqlApi(this, "example", {
       authenticationType: "AWS_IAM",
       name: name,
       schema: schemaContent,
     });
-
-    this.apiId = appsyncApi.id;
     this.graphqlUrl = appsyncApi.uris;
 
-    // AppSync のデータソースとして DynamoDB テーブルを設定
-    const dataSource = new AppsyncDatasource(this, "MyDynamoDbDataSource", {
+    // DataSource
+    const dataSourceProps: AppSyncDataSourceProps = {
       apiId: appsyncApi.id,
-      name: "MyDynamoDbDataSource",
-      type: "AMAZON_DYNAMODB",
-      serviceRoleArn: appsyncRole.arn,
-      dynamodbConfig: {
-        tableName: dynamodbTableName,
-        region: "ap-northeast-1",
-      },
-    });
+      roleNameArn: appsyncRole.arn,
+      dynamodbTableName: dynamodbTableName,
+    };
+    const dataSource = new AppSyncDataSource(this, "MyDynamoDbDataSource", dataSourceProps);
 
-    this.dataSourceName = dataSource.name;
-
-    // AppSync API キーの作成
-    new AppsyncApiKey(this, "MyAppSyncApiKey", {
+    // Resolver
+    const resolverProps: AppSyncResolverProps = {
       apiId: appsyncApi.id,
-    });
+      dataSourceName: dataSource.name,
+    };
+    new createAppsyncResolver(this, "MyAppSyncResolver", resolverProps);
   }
 }

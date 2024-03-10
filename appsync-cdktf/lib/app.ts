@@ -3,7 +3,6 @@ import { Construct } from "constructs";
 import * as path from "path";
 import { AwsProvider } from "../.gen/providers/aws/provider";
 import { AppSyncApi } from "./appsync/api";
-import { setupResolvers } from "./appsync/resolver";
 import { DynamoDbTable } from "./dynamodb/table";
 import { DynamoDbTableItem } from "./dynamodb/table_item"
 import { NodejsFunction } from "./lambda/function";
@@ -27,12 +26,6 @@ export class MyInfrastructureStack extends TerraformStack {
       this,
       "cdktf-appsync",
       dynamoDbTable.table.name,
-    );
-
-    setupResolvers(
-      this,
-      appsyncApi.apiId, // AppSync API のID
-      appsyncApi.dataSourceName, // データソース名
     );
 
     new TerraformOutput(this, "appsyncEndpoint", {
