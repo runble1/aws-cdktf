@@ -29,7 +29,7 @@ export class MyInfrastructureStack extends TerraformStack {
     );
 
     new TerraformOutput(this, "appsyncEndpoint", {
-      value: appsyncApi.graphqlUrl,
+      value: appsyncApi.graphqlUrl
     });
     
     /*
@@ -43,6 +43,7 @@ export class MyInfrastructureStack extends TerraformStack {
       handler: "index.handler",
       functionName: "helloWorldFunction",
       path: path.join(__dirname, "..", "functions/call-appsync"),
+      graphqlUrl: "https://uf5ycqmj35bcfgr6kc5xeuzqyi.appsync-api.ap-northeast-1.amazonaws.com/graphql"
     });
 
     new TerraformOutput(this, "lambdaFunctionUrl", {

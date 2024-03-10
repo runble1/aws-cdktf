@@ -6,6 +6,7 @@ import { AppSyncDataSource, AppSyncDataSourceProps } from "./datasource";
 import { createAppsyncResolver, AppSyncResolverProps } from "./resolver";
 
 export class AppSyncApi extends Construct {
+  public readonly appSyncGraphqlApi: AppsyncGraphqlApi;
   public readonly graphqlUrl: any;
 
   constructor(scope: Construct, name: string, dynamodbTableName: string) {
@@ -25,16 +26,16 @@ export class AppSyncApi extends Construct {
     );
 
     // GraphQL API
-    const appsyncApi = new AppsyncGraphqlApi(this, "example", {
+    this.appSyncGraphqlApi = new AppsyncGraphqlApi(this, "example", {
       authenticationType: "AWS_IAM",
       name: name,
       schema: schemaContent,
     });
-    this.graphqlUrl = appsyncApi.uris;
+    this.graphqlUrl = this.appSyncGraphqlApi.uris
 
     // DataSource
     const dataSourceProps: AppSyncDataSourceProps = {
-      apiId: appsyncApi.id,
+      apiId: this.appSyncGraphqlApi.id,
       roleNameArn: appsyncRole.arn,
       dynamodbTableName: dynamodbTableName,
     };
@@ -42,7 +43,7 @@ export class AppSyncApi extends Construct {
 
     // Resolver
     const resolverProps: AppSyncResolverProps = {
-      apiId: appsyncApi.id,
+      apiId: this.appSyncGraphqlApi.id,
       dataSourceName: dataSource.name,
     };
     new createAppsyncResolver(this, "MyAppSyncResolver", resolverProps);

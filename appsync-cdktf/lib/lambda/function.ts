@@ -10,6 +10,7 @@ export interface NodejsFunctionProps {
   handler: string;
   functionName: string;
   path: string;
+  graphqlUrl: string;
 }
 
 const bundleLambdaFunction = (workingDirectory: string): string => {
@@ -57,6 +58,11 @@ export class NodejsFunction extends Construct {
       filename: lambdaAsset.path,
       sourceCodeHash: lambdaAsset.assetHash,
       architectures: ["arm64"],
+      environment: {
+        variables: {
+          APPSYNC_ENDPOINT: props.graphqlUrl
+        }
+      },
     });
 
     this.lambdaFunctionUrl = new LambdaFunctionUrl(scope, `${name}LambdaUrl`, {

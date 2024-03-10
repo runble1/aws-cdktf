@@ -4,8 +4,7 @@ import { defaultProvider } from "@aws-sdk/credential-provider-node";
 import { HttpRequest } from "@aws-sdk/protocol-http";
 
 const region = "ap-northeast-1";
-//const graphqlEndpoint = process.env.APPSYNC_ENDPOINT || "";
-const graphqlEndpoint = "https://uf5ycqmj35bcfgr6kc5xeuzqyi.appsync-api.ap-northeast-1.amazonaws.com/graphql"
+const graphqlEndpoint = process.env.APPSYNC_ENDPOINT || "";
 
 const query = JSON.stringify({
   query: `query GetProductPrice {
