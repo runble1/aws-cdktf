@@ -7,8 +7,8 @@ import { createAppsyncIamRole } from "./iam";
 
 export class AppSyncApi extends Construct {
   public readonly graphqlUrl: any;
-  public readonly apiId: string; // AppSync API の ID を保持するプロパティ
-  public readonly dataSourceName: string; // データソース名を保持するプロパティ
+  public readonly apiId: string;
+  public readonly dataSourceName: string;
 
   constructor(scope: Construct, name: string, dynamodbTableName: string) {
     super(scope, name);
@@ -49,7 +49,6 @@ export class AppSyncApi extends Construct {
     });
 
     this.dataSourceName = dataSource.name; // データソース名を保存
-
 
     // AppSync API キーの作成
     new AppsyncApiKey(this, "MyAppSyncApiKey", {
