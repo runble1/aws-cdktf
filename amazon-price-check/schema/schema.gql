@@ -1,0 +1,28 @@
+type Product {
+  productId: ID!
+  title: String
+  url: String
+  category: String
+  lowPrice: Float
+}
+
+type History {
+  productId: ID!
+  checkTimestamp: String!
+  price: Float!
+}
+
+type Query {
+  getProduct(productId: ID!): Product
+  getHistory(productId: ID!, from: String!, to: String!): [History]
+}
+
+type Mutation {
+  putProduct(productId: String!, Title: String, URL: String, Category: String, LowPrice: Float): Product
+  putHistory(productId: String!, checkTimestamp: String!, price: Float): History
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
