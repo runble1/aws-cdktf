@@ -1,0 +1,23 @@
+{
+  "language": "typescript",
+  "app": "npx ts-node bin/main.ts",
+  "projectId": "ef4ae0c1-1cea-4b81-814f-294eb3cdec48",
+  "sendCrashReports": "true",
+  "terraformProviders": [
+    {
+      "name": "aws",
+      "source": "hashicorp/aws",
+      "version": "~> 5.40"
+    }
+  ],
+  "terraformModules": [],
+  "context": {
+  },
+  "backend": {
+    "s3": {
+      "bucket": "tfstate-runble1",
+      "key": "state/amazon-price-check/terraform.tfstate",
+      "region": "ap-northeast-1"
+    }
+  }
+}
